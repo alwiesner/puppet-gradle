@@ -53,7 +53,8 @@ class gradle(
   $url      = 'UNSET',
   $target   = 'UNSET',
   $timeout  = 120,
-  $daemon   = true
+  $daemon   = true,
+  $proxy    = undef,
 ) {
 
   include gradle::params
@@ -87,15 +88,29 @@ class gradle(
     group => 'root',
   }
 
-  archive { "gradle-${version_real}-all.zip":
-    ensure     => present,
-    url        => $url_real,
-    checksum   => false,
-    src_target => '/var/tmp',
-    target     => '/opt',
-    root_dir   => "gradle-${version_real}",
-    extension  => 'zip',
-    timeout    => $timeout,
+  if ($proxy == undef) {
+    archive { "gradle-${version_real}-all.zip":
+      ensure     => present,
+      url        => $url_real,
+      checksum   => false,
+      src_target => '/var/tmp',
+      target     => '/opt',
+      root_dir   => "gradle-${version_real}",
+      extension  => 'zip',
+      timeout    => $timeout,
+    }
+  } else {
+    archive { "gradle-${version_real}-all.zip":
+      ensure     => present,
+      url        => $url_real,
+      checksum   => false,
+      src_target => '/var/tmp',
+      target     => '/opt',
+      root_dir   => "gradle-${version_real}",
+      extension  => 'zip',
+      timeout    => $timeout,
+      proxy      => $proxy,
+    }
   }
 
   file { $target_real:
